@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<h1>Sign PDF</h1>
+<form method=post enctype=multipart/form-data>
+  <div class="flex-container">
+    <div class="m10">
+      <label for="file">Your PDf file</label>
+      <input type=file name=pdf_file accept="application/pdf">
+    </div>
+    <div class="m10">
+      <label for="file">Your key file</label>
+      <input type=file name=key_file accept=".pem">
+    </div>
+    <div class="m10">
+      <label for="file">Your certificate file</label>
+      <input type=file name=cert_file accept=".cer, .pem">
+    </div>
+  </div>
+  <input class="m10" type=submit value=Upload>
+</form>
+{% if file_url %}
+<button class"m10">
+  <a href="{{ file_url }}" download >download</a>
+</button>
+{% endif %}
+{% if error %}
+<p class="m10">{{ error }}</p>
+{% endif %}
+{% endblock %}
