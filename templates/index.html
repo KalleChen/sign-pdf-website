@@ -2,7 +2,7 @@
 
 {% block body %}
 <h1>Sign PDF</h1>
-<form method=post enctype=multipart/form-data>
+<form name="upload_form" method=post enctype=multipart/form-data>
   <div class="flex-container">
     <div class="m10">
       <label for="file">Your PDf file</label>
@@ -17,7 +17,7 @@
       <input type=file name=cert_file accept=".cer, .pem">
     </div>
   </div>
-  <input class="m10" type=submit value=Upload>
+  <button class="m10" onclick="submit_form()">Upload</button>
 </form>
 {% if file_url %}
 <button class"m10">

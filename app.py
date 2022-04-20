@@ -1,15 +1,15 @@
 import os
 from flask import (
     Flask,
-    flash,
     request,
-    redirect,
     url_for,
     send_from_directory,
     render_template,
 )
 
-UPLOAD_FOLDER = "./uploads"
+from sign import sign_with_timestamp
+
+UPLOAD_FOLDER = "./files"
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
@@ -34,12 +34,25 @@ def upload_file():
             return render_template("index.html", error="No selected file")
         if pdf_file and cert_file:
             pdf_filename = "upload.pdf"
+            key_filename = "key.pem"
+            cert_filename = "cert.pem"
             pdf_file.save(
                 os.path.join(app.config["UPLOAD_FOLDER"], pdf_filename)
             )
+            key_file.save(
+                os.path.join(app.config["UPLOAD_FOLDER"], key_filename)
+            )
+            cert_file.save(
+                os.path.join(app.config["UPLOAD_FOLDER"], cert_filename)
+            )
+            signed_pdf_filename = sign_with_timestamp(
+                "./files/" + pdf_filename,
+                "./files/" + key_filename,
+                "./files/" + cert_filename,
+            )
             return render_template(
                 "index.html",
-                file_url=url_for("download_file", filename=pdf_filename),
+                file_url=url_for("download_file", filename=signed_pdf_filename),
             )
     return render_template("index.html")
 
