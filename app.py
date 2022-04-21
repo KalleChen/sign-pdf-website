@@ -7,7 +7,11 @@ from flask import (
     render_template,
 )
 
-from sign import sign_with_timestamp, sign_without_timestamp
+from sign import (
+    sign_with_timestamp,
+    sign_without_timestamp,
+    sign_only_timestamp,
+)
 
 UPLOAD_FOLDER = "./files"
 app = Flask(__name__)
@@ -98,6 +102,29 @@ def add_signature():
                 file_url=url_for("download_file", filename=signed_pdf_filename),
             )
     return render_template("signature.html")
+
+
+@app.route("/timestamp", methods=["POST", "GET"])
+def add_timestamp():
+    if request.method == "POST":
+        if "pdf_file" not in request.files:
+            return render_template("timestamp.html", error="No file part")
+        pdf_file = request.files["pdf_file"]
+        if pdf_file.filename == "" or pdf_file.filename is None:
+            return render_template("timestamp.html", error="No selected file")
+        if pdf_file:
+            pdf_filename = "upload.pdf"
+            pdf_file.save(
+                os.path.join(app.config["UPLOAD_FOLDER"], pdf_filename)
+            )
+            signed_pdf_filename = sign_only_timestamp(
+                "./files/" + pdf_filename,
+            )
+            return render_template(
+                "timestamp.html",
+                file_url=url_for("download_file", filename=signed_pdf_filename),
+            )
+    return render_template("timestamp.html")
 
 
 @app.route("/download/<filename>")

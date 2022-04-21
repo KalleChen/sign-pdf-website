@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<h1>Add timestamp</h1>
+<a class="m10" href="/">Sign PDF with timestamp</a>
+<a class="m10" href="/signature">Only Sign without timestamp</a>
+<form name="upload_form" method=post enctype=multipart/form-data>
+  <div class="m10">
+    <label for="file">Your PDf file</label>
+    <input type=file name=pdf_file accept="application/pdf">
+  </div>
+  <button class="m10" onclick="submit_form()">Upload</button>
+</form>
+{% if file_url %}
+<button class"m10">
+  <a href="{{ file_url }}" download >download</a>
+</button>
+{% endif %}
+{% if error %}
+<p class="m10">{{ error }}</p>
+{% endif %}
+{% endblock %}

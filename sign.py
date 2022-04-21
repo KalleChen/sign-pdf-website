@@ -37,3 +37,20 @@ def sign_without_timestamp(pdf, key, cert):
                     output=outf,
                 )
     return "signed_without_timestamp.pdf"
+
+
+def sign_only_timestamp(pdf):
+
+    tst_client = timestamps.HTTPTimeStamper("https://freetsa.org/tsr")
+
+    with open(pdf, "rb") as inf:
+        with open("./files/only_timestamp.pdf", "wb") as outf:
+            w = IncrementalPdfFileWriter(inf)
+            signer = signers.pdf_signer.PdfTimeStamper(timestamper=tst_client)
+            signer.timestamp_pdf(
+                md_algorithm="sha256",
+                pdf_out=w,
+                timestamper=tst_client,
+                output=outf,
+            )
+    return "only_timestamp.pdf"
