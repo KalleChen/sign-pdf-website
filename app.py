@@ -13,6 +13,9 @@ from sign import (
     sign_only_timestamp,
 )
 
+if not os.path.isfile("./files"):
+    os.mkdir("./files")
+
 UPLOAD_FOLDER = "./files"
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
