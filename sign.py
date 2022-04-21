@@ -21,3 +21,19 @@ def sign_with_timestamp(pdf, key, cert):
                     output=outf,
                 )
     return "signed.pdf"
+
+
+def sign_without_timestamp(pdf, key, cert):
+    cms_signer = signers.SimpleSigner.load(key, cert)
+
+    with open(pdf, "rb") as inf:
+        if cms_signer:
+            with open("./files/signed_without_timestamp.pdf", "wb") as outf:
+                w = IncrementalPdfFileWriter(inf)
+                signers.sign_pdf(
+                    w,
+                    signers.PdfSignatureMetadata(field_name="Signature1"),
+                    signer=cms_signer,
+                    output=outf,
+                )
+    return "signed_without_timestamp.pdf"
