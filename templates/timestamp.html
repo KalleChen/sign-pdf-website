@@ -9,6 +9,10 @@
     <label for="file">Your PDf file</label>
     <input type=file name=pdf_file accept="application/pdf">
   </div>
+  <div class="m10">
+    <label for="file">TSA service url</label>
+    <input type=text name=tsa_url>
+  </div>
   <button class="m10" onclick="submit_form()">Upload</button>
 </form>
 {% if file_url %}
@@ -17,6 +21,6 @@
 </button>
 {% endif %}
 {% if error %}
-<p class="m10">{{ error }}</p>
+<p class="m10" style="color:red">{{ error }}</p>
 {% endif %}
 {% endblock %}
