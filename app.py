@@ -12,11 +12,13 @@ from sign import (
     sign_without_timestamp,
     sign_only_timestamp,
 )
-
-if not os.path.isdir("./files"):
-    os.mkdir("./files")
+from validate import validate_pdf
 
 UPLOAD_FOLDER = "./files"
+
+if not os.path.isdir(UPLOAD_FOLDER):
+    os.mkdir(UPLOAD_FOLDER)
+
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
@@ -43,7 +45,7 @@ def add_signature_and_timestamp():
                 or (key_file.filename == "" or key_file.filename is None)
             ):
                 return render_template("index.html", error="No selected file")
-            if pdf_file and cert_file:
+            if pdf_file and cert_file and key_file:
                 pdf_filename = "upload.pdf"
                 key_filename = "key.pem"
                 cert_filename = "cert.pem"
@@ -167,6 +169,60 @@ def add_timestamp():
     except Exception as e:
         return render_template("timestamp.html", error=str(e))
     return render_template("timestamp.html")
+
+
+@app.route("/validate", methods=["POST", "GET"])
+def validate():
+    try:
+        if request.method == "POST":
+            if "pdf_file" not in request.files:
+                return render_template("validate.html", error="No file part")
+            if "cert_file" not in request.files:
+                return render_template("validate.html", error="No cert file")
+            if "tsa_cert_file" not in request.files:
+                return render_template(
+                    "validate.html", error="No tsa cert file"
+                )
+            pdf_file = request.files["pdf_file"]
+            cert_file = request.files["cert_file"]
+            tsa_cert_file = request.files["tsa_cert_file"]
+            if pdf_file.filename == "" or pdf_file.filename is None:
+                return render_template(
+                    "validate.html", error="No selected file"
+                )
+            cert_filename = ""
+            tsa_cert_filename = ""
+            if cert_file:
+                cert_filename = "cert.pem"
+                cert_file.save(
+                    os.path.join(app.config["UPLOAD_FOLDER"], cert_filename)
+                )
+            if tsa_cert_file:
+                tsa_cert_filename = "tsa_cert.pem"
+                tsa_cert_file.save(
+                    os.path.join(app.config["UPLOAD_FOLDER"], tsa_cert_filename)
+                )
+            if pdf_file:
+                pdf_filename = "upload.pdf"
+                pdf_file.save(
+                    os.path.join(app.config["UPLOAD_FOLDER"], pdf_filename)
+                )
+                valid, validate_result = validate_pdf(
+                    "./files/" + pdf_filename,
+                    "./files/" + cert_filename,
+                    "./files/" + tsa_cert_filename,
+                )
+                if not valid:
+                    return render_template(
+                        "validate.html", error=validate_result
+                    )
+                return render_template(
+                    "validate.html",
+                    result=validate_result.split("\n"),
+                )
+    except Exception as e:
+        return render_template("validate.html", error=str(e))
+    return render_template("validate.html")
 
 
 @app.route("/download/<filename>")
