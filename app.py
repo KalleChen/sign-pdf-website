@@ -13,7 +13,7 @@ from sign import (
     sign_only_timestamp,
 )
 
-if not os.path.isfile("./files"):
+if not os.path.isdir("./files"):
     os.mkdir("./files")
 
 UPLOAD_FOLDER = "./files"
